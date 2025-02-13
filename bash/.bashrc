@@ -1,4 +1,43 @@
-# .bashrc is sourced for an interactive shell.
+# .bashrc
+
+complete -C '/usr/local/bin/aws_completer' aws
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+export AWS_PROFILE=tech-services-hpc-nl-development_administrator
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+if [ -d ~/.bashrc.d ]; then
+	for rc in ~/.bashrc.d/*; do
+		if [ -f "$rc" ]; then
+			. "$rc"
+		fi
+	done
+fi
+
+unset rc
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+#############################################################################################
+############################### Customization starts here ###################################
+#############################################################################################
+
+# Taken from https://github.com/yrro/dotfiles/blob/master/bash/.bashrc
 
 # For some reason, openssh invokes bash as an interactive shell even if we
 # are only using scp. Therefore check that we have a terminal before processing
@@ -62,8 +101,8 @@ command -v dircolors >/dev/null && eval "$(dircolors -b)"
 #
 case $(locale charmap) in
 UTF-8)
-	_smile_happy='☺'
-	_smile_frown='☹'
+	_smile_happy='\U0001F60E'
+	_smile_frown='\U1F615'
 	;;
 *)
 	_smile_happy=':)'
@@ -85,13 +124,15 @@ function user_colour {
 	fi
 }
 _csi_default=$'\e[39m'
-_csi_cyan=$'\e[36m'
-_csi_green=$'\e[32m'
-_csi_red=$'\e[91m'
-_csi_gold=$'\e[33m'
-_csi_purple=$'\e[38;5;141m'
-if [[ -e /usr/lib/git-core/git-sh-prompt ]]; then
-	source /usr/lib/git-core/git-sh-prompt
+_csi_cyan=$'\e[38;2;0;255;255m'
+_csi_green=$'\e[38;2;27;200;20m'
+_csi_red=$'\e[38;2;249;10;10m'
+_csi_gold=$'\e[38;2;255;215;0m'
+_csi_purple=$'\e[38;2;175;0;255m'
+_csi_blue=$'\e[38;2;18;29;247m'
+
+if [[ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]]; then
+	source /usr/share/git-core/contrib/completion/git-prompt.sh
 else
 	function __git_ps1 { :; }
 fi
@@ -121,7 +162,7 @@ function s_client-verify {
 	openssl s_client -showcerts -verify 20 -verify_return_error -verify_hostname "$hostname" -connect "$1"
 }
 
-PS1="\n\$(smile) ${_csi_cyan}\\A \$(user_colour)\\u@\\h \$(__systemd_ps1)${_csi_gold}\\w${_csi_default} \$(__git_ps1 '(%s) ')\$(__java_ps1)\n\\$ "
+PS1="\n\$(smile) ${_csi_blue}\\A \$(user_colour)\\u@\\h \$(__systemd_ps1)${_csi_purple}\\w${_csi_default} \$(__git_ps1 '(%s) ')\$(__java_ps1)\n\\$ "
 
 HISTCONTROL=ignorespace:ignoredups:erasedups
 HISTSIZE=100000
@@ -480,6 +521,6 @@ fi
 
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook bash)"
 
-etckeeper_check
+#etckeeper_check
 
 # vim: ts=2 sts=2 sw=2 noet
